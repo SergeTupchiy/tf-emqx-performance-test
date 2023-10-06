@@ -35,9 +35,9 @@ module "emqx_ec2" {
     package_url            = var.package_url
     cluster_dns_name       = var.cluster_dns_name
     prometheus_push_gw_url = var.prometheus_push_gw_url
+    otel_collector_url     = var.otel_collector_url
     node_role              = var.node_role
     launch_index_offset    = var.launch_index_offset
     core_nodes             = var.core_nodes
   })
 }
-

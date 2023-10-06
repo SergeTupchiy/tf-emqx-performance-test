@@ -207,6 +207,34 @@ module "prometheus" {
   ]
 }
 
+module "jaeger" {
+  source            = "./modules/jaeger"
+  vpc_id            = module.vpc.vpc_id
+  cidr_blocks       = [var.vpc_cidr, var.secondary_vpc_cidr]
+  ami_filter        = local.ami_filter
+  namespace         = var.namespace
+  route53_zone_id   = aws_route53_zone.int.zone_id
+  route53_zone_name = local.route53_zone_name
+  iam_profile       = module.ec2_profile.iam_profile
+  key_name          = aws_key_pair.kp.key_name
+  subnet_id         = module.vpc.public_subnet_ids[0]
+  s3_bucket_name    = var.s3_bucket_name
+}
+
+module "otel_collector" {
+  source             = "./modules/otel_collector"
+  ami_filter         = local.ami_filter
+  namespace          = var.namespace
+  route53_zone_id    = aws_route53_zone.int.zone_id
+  route53_zone_name  = local.route53_zone_name
+  iam_profile        = module.ec2_profile.iam_profile
+  key_name           = aws_key_pair.kp.key_name
+  sg_ids             = [aws_security_group.secondary_vpc_sg.id]
+  subnet_id          = module.secondary_vpc.public_subnet_ids[0]
+  s3_bucket_name     = var.s3_bucket_name
+  jaeger_private_url = module.jaeger.private_url
+}
+
 # https://www.emqx.io/docs/en/v5.0/deploy/cluster/create-cluster.html#autocluster-by-dns-records
 resource "aws_route53_record" "emqx-cluster" {
   zone_id = aws_route53_zone.int.zone_id
@@ -238,6 +266,7 @@ module "emqx_core" {
   key_name          = aws_key_pair.kp.key_name
   subnet_id         = module.vpc.public_subnet_ids[0]
   prometheus_push_gw_url = module.prometheus.push_gw_url
+  otel_collector_url = module.otel_collector.collector_url
   cluster_dns_name  = local.cluster_dns_name
 }
 
@@ -264,6 +293,7 @@ module "emqx_replicant" {
   key_name          = aws_key_pair.kp2.key_name
   subnet_id         = module.secondary_vpc.public_subnet_ids[0]
   prometheus_push_gw_url = module.prometheus.push_gw_url
+  otel_collector_url = module.otel_collector.collector_url
   cluster_dns_name  = local.cluster_dns_name
   providers = {
     aws = aws.secondary

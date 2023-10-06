@@ -40,6 +40,8 @@ Environment=EMQX_CLUSTER__CORE_NODES="${join(",", core_nodes)}"
 %{ endif }
 Environment=EMQX_PROMETHEUS__ENABLE=true
 Environment=EMQX_PROMETHEUS__PUSH_GATEWAY_SERVER=${prometheus_push_gw_url}
+Environment=EMQX_OPENTELEMETRY__TRACE__ENABLE=true
+Environment=EMQX_OPENTELEMETRY__EXPORTER__ENDPOINT=${otel_collector_url}
 Environment=EMQX_LOG__CONSOLE_HANDLER__LEVEL=info
 Environment=EMQX_LOG__FILE_HANDLERS__DEFAULT__LEVEL=info
 EOF

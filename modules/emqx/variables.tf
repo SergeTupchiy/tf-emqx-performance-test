@@ -75,6 +75,11 @@ variable "prometheus_push_gw_url" {
   type        = string
 }
 
+variable "otel_collector_url" {
+  description = "OpenTelemetry Collector URL"
+  type        = string
+}
+
 variable "node_role" {
   description = "Node Role"
   type        = string

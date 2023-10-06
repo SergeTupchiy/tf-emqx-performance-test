@@ -48,6 +48,26 @@ output "prometheus_url" {
   value       = "http://${module.prometheus.public_ip}:9090"
 }
 
+output "otel_collector_public_ip" {
+  description = "public IP of otel_collector instance"
+  value       = module.otel_collector.public_ip
+}
+
+output "otel_collector_private_ip" {
+  description = "private IP of otel_collector instance"
+  value       = module.otel_collector.private_ip
+}
+
+output "jaeger_public_ip" {
+  description = "public IP of jager instance"
+  value       = module.jaeger.public_ip
+}
+
+output "jaeger_private_ip" {
+  description = "private IP of jaeger instance"
+  value       = module.jaeger.private_ip
+}
+
 output "s3_bucket_name" {
   value = var.s3_bucket_name
 }
